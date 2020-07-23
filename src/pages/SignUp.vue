@@ -2,14 +2,16 @@
   <v-container>
     <v-row justify="center">
       <v-col xs="12" sm="8" md="6" lg="4">
-        <v-card class="pa-9">
-          <v-card-title class="justify-center text-h2 py-10"
+        <v-card class="pa-8">
+          <v-card-title class="justify-center py-10 heading"
             >Instagram</v-card-title
           >
           <v-card-text>
             <b>Sign up to see photos and videos from your friends</b>
           </v-card-text>
-          <v-btn outlined block color="primary">Login with Google</v-btn>
+          <v-btn outlined block color="primary" @click="loginWithGoogle"
+            >Login with Google</v-btn
+          >
           <v-row align="center" class="py-5">
             <v-col>
               <v-divider></v-divider>
@@ -44,14 +46,32 @@
           <v-text-field
             dense
             v-model="password"
-            placeholder="Password"
             outlined
+            placeholder="Password"
+            :type="showPassword ? 'text' : 'password'"
+            :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+            @click:append="showPassword = !showPassword"
             :rules="passwordRules"
             validate-on-blur
           ></v-text-field>
-          <v-btn block elevation="0" color="primary" :disabled="!enableButton"
+          <v-btn
+            block
+            elevation="0"
+            color="primary"
+            @click="signUp"
+            :disabled="!enableButton"
             >Sign Up</v-btn
           >
+          <h5 style="text-align: center" class="ma-1 pa-1">
+            By Signing up, you agree to our Terms, Data Policy and Cookie
+            Policy.
+          </h5>
+        </v-card>
+        <v-card class="mt-3 rounded-0" flat outlined>
+          <v-card-title class="justify-center"
+            >Have an account?
+            <v-btn text color="primary" to="/SignIn">Login</v-btn>
+          </v-card-title>
         </v-card>
       </v-col>
     </v-row>
@@ -60,9 +80,12 @@
 
 <script>
 import { validatorMixins } from "../mixins/validatorMixins";
+import { auth } from "../auth";
+
 export default {
   data() {
     return {
+      showPassword: false,
       email: "",
       username: "",
       fullname: "",
@@ -79,6 +102,32 @@ export default {
       );
     }
   },
+  methods: {
+    async loginWithGoogle() {
+      try {
+        const user = await auth.loginWithGoogle();
+        console.log(user);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async signUp() {
+      try {
+        const user = await auth.signUp(this.email, this.password);
+        console.log(user);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  },
   mixins: [validatorMixins]
 };
 </script>
+
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Pacifico&display=swap");
+.heading {
+  font-family: "Pacifico", cursive;
+  font-size: 4vw;
+}
+</style>
